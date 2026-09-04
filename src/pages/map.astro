@@ -1,28 +1,51 @@
 ---
+// Import the generic Base or Layout component, NOT the BlogPost template
 import BaseHead from '../components/BaseHead.astro'; 
 import Header from '../components/Header.astro'; 
 import Footer from '../components/Footer.astro'; 
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts'; 
-import Layout from '../layouts/BlogPost.astro'; 
+// Note: We completely removed the BlogPost layout import
 ---
-<!-- Wrap everything inside the Layout component -->
-<Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <div id="map"></div>
-  
-  <style>
-    #map { 
-      height: 400px; 
-      width: 100%; 
-    }
-  </style>
-  
-  <script>
-    import L from 'leaflet';
-    import 'leaflet/dist/leaflet.css';
+<!doctype html>
+<html lang="en">
+<head>
+  <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+</head>
+<body>
+  <Header />
+  <main>
+    <!-- Map Container -->
+    <div id="map"></div>
+    
+    <style>
+      #map { 
+        height: 400px; 
+        width: 100%; 
+      }
+    </style>
+    
+    <script>
+      import L from 'leaflet';
+      import 'leaflet/dist/leaflet.css';
 
-    const map = L.map('map').setView([51.505, -0.09], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-      attribution: 'OpenStreetMap' 
-    }).addTo(map);
-  </script>
-</Layout>
+      // Fix for default Leaflet marker icon asset mapping inside Vite/Rolldown
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com',
+        iconUrl: 'https://unpkg.com',
+        shadowUrl: 'https://unpkg.com',
+      });
+
+      // Initialize the map safely in the browser context
+      const map = L.map('map').setView([51.505, -0.09], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+        attribution: 'OpenStreetMap' 
+      }).addTo(map);
+
+      // Place a test marker
+      L.marker([51.505, -0.09]).addTo(map);
+    </script>
+  </main>
+  <Footer />
+</body>
+</html>
