@@ -3,6 +3,20 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import Layout from '../layouts/Layout.astro';
+import DynamicMap from '../components/DynamicMap.jsx';
+---
+
+<Layout title="Dynamic Data USA Map">
+  <main style="padding: 2rem; max-width: 1000px; margin: 0 auto;">
+    <h1>USA Multi-Point Data Tracking</h1>
+    <p>Dynamically fetching multiple live markers per state.</p>
+    
+    <!-- client:only ensures Leaflet doesn't crash during Astro's build/SSR step -->
+    <DynamicMap client:only="react" />
+  </main>
+</Layout>
+
 ---
 
 <!doctype html>
