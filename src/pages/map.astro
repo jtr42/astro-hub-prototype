@@ -1,39 +1,37 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro'; 
+import Header from '../components/Header.astro'; 
+import Footer from '../components/Footer.astro'; 
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts'; 
+import Layout from '../layouts/BlogPost.astro'; 
 ---
-
----
-
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-<div id="map"></div>
+<head>
+  <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+</head>
+<body>
+  <Header />
+  <main>
+    <div id="map"></div>
+    
+    <style>
+      #map { 
+        height: 400px; 
+        width: 100%; 
+      }
+    </style>
+    
+    <script>
+      import L from 'leaflet';
+      import 'leaflet/dist/leaflet.css';
 
-<style>
-  #map { height: 400px; width: 100%; }
-</style>
-
-<script>
-  //  Moving the import here forces Rolldown to bundle it exclusively for the client
-  import L from 'leaflet';
-  import 'leaflet/dist/leaflet.css';
-
-  const map = L.map('map').setView([51.505, -0.09], 13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: 'OpenStreetMap'
-  }).addTo(map);
-</script>
-
-		</main>
-		<Footer />
-	</body>
+      const map = L.map('map').setView([51.505, -0.09], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+        attribution: 'OpenStreetMap' 
+      }).addTo(map);
+    </script>
+  </main>
+  <Footer />
+</body>
 </html>
