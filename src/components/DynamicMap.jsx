@@ -1,50 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-
-// Fix for missing default marker icons in Leaflet standard builds
-import L from 'leaflet';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-let DefaultIcon = L.icon({ iconUrl: icon, shadowUrl: iconShadow, iconAnchor: [12, 41] });
-L.Marker.prototype.options.icon = DefaultIcon;
+import { useEffect, useState } from 'react';
 
 export default function DynamicMap() {
-  const [points, setPoints] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [MapComponents, setMapComponents] = useState(null);
 
   useEffect(() => {
-    // Fetch dynamic multiple points from Astro API route
-    fetch('/api/locations.json')
-      .then((res) => res.json())
-      .then((data) => {
-        setPoints(data);
-        setLoading(false);
-      })
-      .catch((err) => console.error("Error fetching map data:", err));
+    // Dynamically import Leaflet and React-Leaflet only on the client side
+    Promise.all([
+      import('leaflet'),
+      import('react-leaflet')
+    ]).then(([leaflet, reactLeaflet]) => {
+      // Fix for Leaflet default marker icons in React (optional but usually needed)
+      delete leaflet.Icon.Default.prototype._getIconUrl;
+      leaflet.Icon.Default.mergeOptions({
+        iconRetinaUrl: '/images/marker-icon-2x.png',
+        iconUrl: '/images/marker-icon.png',
+        shadowUrl: '/images/marker-shadow.png',
+      });
+
+      setMapComponents(reactLeaflet);
+    });
   }, []);
 
-  if (loading) return <div>Loading Map Data...</div>;
+  if (!MapComponents) {
+    return <div>Loading Map...</div>; // Render a fallback while loading on client
+  }
+
+  // Destructure the components you need from the resolved module
+  const { MapContainer, TileLayer, Marker, Popup } = MapComponents;
 
   return (
-    <MapContainer 
-      center={[37.8, -96]} // Geocenter of USA
-      zoom={4} 
-      style={{ height: "500px", width: "100%", borderRadius: "8px" }}
-    >
+    <MapContainer center={[51.505, -0.09]} zoom={13} style={{ height: '400px', width: '100%' }}>
       <TileLayer
-        attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
       />
-      {points.map((point) => (
-        <Marker key={point.id} position={[point.lat, point.lng]}>
-          <Popup>
-            <strong>{point.name}</strong> <br />
-            State: {point.state} <br />
-            {point.details}
-          </Popup>
-        </Marker>
-      ))}
     </MapContainer>
   );
 }

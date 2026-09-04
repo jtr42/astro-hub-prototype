@@ -5,25 +5,17 @@ import sitemap from "@astrojs/sitemap";
 import cloudflare from "@astrojs/cloudflare";
 import react from "@astrojs/react";
 
-// https://astro.build/config
 export default defineConfig({
   site: "https://example.com",
   integrations: [mdx(), sitemap(), react()],
   adapter: cloudflare({
-    platformProxy: {
-      enabled: true,
-    },
+    platformProxy: { enabled: true },
   }),
   vite: {
     ssr: {
-      // Tells Astro/Vite to skip bundling these on the server completely
-      noExternal: []
+      // Switch from 'external' to 'noExternal' to bundle react-leaflet into the app
+      noExternal: ['react-leaflet', 'leaflet'],
     },
-    build: {
-      rollupOptions: {
-        // Tells Rolldown to treat these imports as external modules
-        external: ['react-leaflet', 'leaflet'],
-      },
-    },
+    // Keep rollupOptions external empty or removed for these packages
   },
 });
