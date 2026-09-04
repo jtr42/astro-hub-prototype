@@ -5,6 +5,10 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import 'leaflet/dist/leaflet.css';
+import DynamicMap from '../components/DynamicMap.jsx';
+---
+
+
 
 type Props = CollectionEntry<'blog'>['data'];
 
@@ -56,6 +60,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 	</head>
 
 	<body>
+    	<DynamicMap client:only="react" />
 		<Header />
 		<main>
 			<article>
