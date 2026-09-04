@@ -20,6 +20,7 @@ export default defineConfig({
           rollupOptions: {
             // Tells Rolldown to treat these imports as external modules
             external: ['react-leaflet', 'leaflet'],
+          },
     adapter: cloudflare({
         platformProxy: {
             enabled: true,
